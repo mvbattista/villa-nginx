@@ -1,0 +1,71 @@
+version: '3.3'
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    restart: always
+    networks:
+      - main
+    ports:
+      - '80:80'
+    volumes:
+      - '/var/run/docker.sock:/tmp/docker.sock:ro'
+      - './vhost.d:/etc/nginx/vhost.d:ro'
+  portainer:
+    image: 'portainer/portainer-ce:latest'
+    command: '-H unix:///var/run/docker.sock'
+    restart: always
+    networks:
+      - main
+    environment:
+      - VIRTUAL_HOST=localhost/portainer
+      - VIRTUAL_PORT=9000
+    ports:
+      - '8000:8000'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - 'portainer_data:/data'
+  firefly-iii:
+    image: 'fireflyiii/core:latest'
+    volumes:
+      - 'firefly_iii_upload:/var/www/html/storage/upload'
+    env_file: .env
+    ports:
+      - '80:8080'
+    networks:
+      - main
+    depends_on:
+      - firefly-db
+  firefly-db:
+    image: mariadb
+    container_name: firefly_db
+    networks:
+      - main
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_USER=firefly
+      - MYSQL_PASSWORD=BigDamnHeroesSir!
+      - MYSQL_DATABASE=firefly
+    volumes:
+      - 'firefly_iii_db:/var/lib/mysqlnetworks'
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    links:
+    - firefly-db
+    environment:
+        - PMA_HOST=firefly-db
+        - PMA_PORT=3306
+        - PMA_ARBITRARY=1
+        - VIRTUAL_HOST=localhost/phpmyadmin
+        - VIRTUAL_PORT=8081
+    restart: always
+    ports:
+      - '8081:80'
+networks:
+    main: null
+volumes:
+    portainer_data: null
+    firefly_iii_upload: null
+    firefly_iii_db: null
