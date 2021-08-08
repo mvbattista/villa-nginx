@@ -28,7 +28,7 @@ services:
     image: 'fireflyiii/core:latest'
     volumes:
       - 'firefly_iii_upload:/var/www/html/storage/upload'
-    env_file: .env
+    env_file: .firefly_env
     ports:
       - '80:8080'
     networks:
