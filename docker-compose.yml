@@ -35,20 +35,28 @@ services:
       - main
     depends_on:
       - firefly-db
+# https://github.com/yobasystems/alpine-mariadb      
   firefly-db:
-    image: mariadb
+    image: yobasystems/alpine-mariadb
     container_name: firefly_db
+    restart: always
     networks:
       - main
     ports:
       - '3306:3306'
     environment:
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      # - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_ROOT_PASSWORD=Glob@l@dmin
       - MYSQL_USER=firefly
       - MYSQL_PASSWORD=BigDamnHeroesSir!
       - MYSQL_DATABASE=firefly
     volumes:
-      - 'firefly_iii_db:/var/lib/mysqlnetworks'
+      - 'firefly_iii_db:/var/lib/mysql'
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD || exit 1
+      interval: 60s
+      timeout: 5s
+      retries: 5
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
