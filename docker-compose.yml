@@ -18,7 +18,7 @@ services:
       - main
     environment:
       - VIRTUAL_HOST=localhost/portainer
-      - VIRTUAL_PORT=9000
+      - VIRTUAL_PORT=8080
     ports:
       - '8000:8000'
     volumes:
@@ -30,7 +30,7 @@ services:
       - 'firefly_iii_upload:/var/www/html/storage/upload'
     env_file: .firefly_env
     ports:
-      - '80:8080'
+      - '8080:8080'
     networks:
       - main
     depends_on:
