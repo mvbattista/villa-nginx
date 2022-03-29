@@ -1,25 +1,16 @@
----
-version: "2.1"
+version: '3'
 services:
-  swag:
-    image: lscr.io/linuxserver/swag
-    container_name: swag
-    cap_add:
-      - NET_ADMIN
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-      - URL=localhost
-      - VALIDATION=http
-    volumes:
-      - ./swag_config:/config
+  battproxy:
+    image: 'nginx:alpine'
     ports:
-      - 443:443
-      - 80:80 #optional
-    restart: unless-stopped
+      - '80:80'
+      # - '8081:8081'
+    restart: always
     networks:
       - main
+    volumes:
+      - './nginx.conf:/etc/nginx/nginx.conf'
+      - './nginx/:/usr/share/nginx/html/'
   portainer:
     image: 'portainer/portainer-ce:latest'
     command: '-H unix:///var/run/docker.sock'
@@ -37,3 +28,5 @@ networks:
     main: null
 volumes:
     portainer_data: null
+    firefly_iii_upload: null
+    firefly_iii_db: null
