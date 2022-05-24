@@ -9,7 +9,7 @@ services:
     networks:
       - main
     volumes:
-      - './nginx.conf:/etc/nginx/nginx.conf'
+      - './config_nginx/nginx.conf:/etc/nginx/nginx.conf'
       - './nginx/:/usr/share/nginx/html/'
   portainer:
     image: 'portainer/portainer-ce:latest'
@@ -24,9 +24,25 @@ services:
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - 'portainer_data:/data'
+  mariadb:
+#    image: linuxserver/mariadb
+    image: lscr.io/linuxserver/mariadb:latest
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - TZ=America/New_York
+      - MYSQL_DATABASE=${MYSQL_DATABASE} #optional
+      - MYSQL_USER=${MYSQL_USERNAME} #optional
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD} #optional
+#      - REMOTE_SQL=http://URL1/your.sql,https://URL2/your.sql #optional
+    volumes:
+      - path_to_data:/config
+    ports:
+      - 3306:3306
+    restart: unless-stopped
 networks:
     main: null
 volumes:
     portainer_data: null
-    firefly_iii_upload: null
-    firefly_iii_db: null
